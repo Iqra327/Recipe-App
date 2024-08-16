@@ -14,7 +14,7 @@ body{
 }
 
 .navbar-brand{
-  color: rgb(15, 77, 94) !important;
+  color: rgb(15, 77, 94);
 }
 
 .navbar-brand:hover{
@@ -25,11 +25,11 @@ body{
 
 .search-btn{
   border: 1px solid rgb(0, 90, 128);
-  color: rgb(8, 79, 108) !important;
+  color: rgb(8, 79, 108);
 }
 
 .search-btn:hover{
-  color: white !important;
+  color: white;
   background-color: rgb(9, 65, 80);
 }
 
@@ -45,6 +45,7 @@ body{
   outline: rgb(10, 60, 113) !important;
 }
 
+.heading,
 .card-title{
   color:rgb(9, 65, 80);
 }
