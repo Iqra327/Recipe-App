@@ -1,13 +1,15 @@
+const overlay = document.querySelector('.js-overlay');
 const searchBox = document.querySelector('.js-search-box');
 const searchBtn = document.querySelector('.js-search-btn');
 const recipeContainer = document.querySelector('.js-recipe-container');
+const recipeDetailsContainer = document.querySelector('.js-recipe-details-container');
 const heading = document.querySelector('.js-heading');
 
 async function getRecipe(recipeName){
   try {
     recipeContainer.innerHTML = ''; 
   
-    if(recipeName.trim() != '')
+    if(recipeName)
     {
       heading.innerText = 'Just a few seconds, loading your recipes...';
       const data =await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${recipeName}`);
@@ -26,8 +28,20 @@ async function getRecipe(recipeName){
             </div>
           </div>
         `
+
+        const cardElement = document.createElement('div');
+        cardElement.innerHTML = html;
+        const viewRecipeBtn = cardElement.querySelector('.js-view-recipe-btn');
+        viewRecipeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          recipeDetails(meal);
+          recipeDetailsContainer.style.display = 'block';
+          overlay.style.display = 'block';
+        });
+
+        recipeContainer.appendChild(cardElement.firstElementChild);
+
         heading.innerText = '';
-        recipeContainer.innerHTML += html;
       });
     }
     else{
@@ -39,15 +53,49 @@ async function getRecipe(recipeName){
   }
 };
 
+function recipeIngredients(meal){
+  let ingredientsList = '';
+  for(let i = 1; i<=20; i++){
+    const ingredient = meal[`strIngredient${i}`]
+    if(ingredient){
+      const measure = meal[`strMeasure${i}`];
+      ingredientsList += `<li>${measure} ${ingredient}</li>`;
+    }else{
+      break;
+    }
+  }
+  return ingredientsList;
+};
+
+function recipeDetails(meal){
+  const html = `
+    <div class="all-recipes-detail d-flex flex-column mx-auto p-3">
+      <div class="recipe-close-btn ms-auto">
+        <i class="fa-solid fa-square-xmark fa-xl" style="color: #6b050a;"></i>
+      </div>
+      <div class="recipe-details">
+        <h2 class="text-center">${meal.strMeal}</h2>
+        <p class="text-center">${meal.strArea} ${meal.strCategory}</p>
+        <img src="${meal.strMealThumb}" alt="Image of ${meal.strMeal}" class="img-fluid">
+        <h5 class="mt-2">Ingredients</h5>
+        <ul class="mt-1">${recipeIngredients(meal)}</ul>
+        <h5 class="mt-2">Instructions</h5>
+        <p class="text-break mealInstructions">${meal.strInstructions}</p>
+      </div>
+    </div>
+  `
+  recipeDetailsContainer.innerHTML = html; 
+};
+
 searchBtn.addEventListener('click', (e) => {
   e.preventDefault();
   const inputRecipe = searchBox.value.trim();
   getRecipe(inputRecipe);
-});
-
-recipeContainer.addEventListener('click', (e) => {
-  if (e.target && e.target.matches('.js-view-recipe-btn')) {
-    e.preventDefault();
-    
-  }
 });  
+
+recipeDetailsContainer.addEventListener('click', (e) => {
+  if(e.target && e.target.matches('.fa-square-xmark')){
+    recipeDetailsContainer.style.display = 'none';
+    overlay.style.display = 'none';
+  }
+});
